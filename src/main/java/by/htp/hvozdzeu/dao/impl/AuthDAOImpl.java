@@ -6,22 +6,23 @@ import by.htp.hvozdzeu.dao.exception.DAOException;
 import by.htp.hvozdzeu.dao.mapper.AccountRowMapper;
 import by.htp.hvozdzeu.model.Account;
 
-import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
+
+import static by.htp.hvozdzeu.dao.util.CreateToken.saveToken;
 
 public class AuthDAOImpl extends AccountRowMapper implements InstanceDAO, AccountDAO {
 
-    private static final String NOT_CREATE_TOKEN = "not found account";
-
     private static final String CHECK_ACCOUNT = "SELECT * FROM `bankservice`.`account` WHERE `Login` = ? AND `Password` = ?;";
-    private static final String SAVE_TOKEN = "INSERT INTO `bankservice`.`tokens` (`Token`, `Date`, `Time`, `Available`) VALUES (?, ?, ?, ?);";
     private static final String FIND_TOKEN = "SELECT * FROM `tokens` WHERE `tokens`.`Token` = ?;";
 
     private static final String ERROR_SQL_CHECK_ACCOUNT = "Error check user.";
-    private static final String ERROR_SQL_SAVE_TOKEN = "Error save token.";
     private static final String ERROR_FIND_TOKEN = "Error find token.";
+
+    private static final String NOT_CREATE_TOKEN = "not found account";
 
     @Override
     public String getToken(Account account) throws DAOException {
@@ -63,29 +64,11 @@ public class AuthDAOImpl extends AccountRowMapper implements InstanceDAO, Accoun
             preparedStatement.executeQuery();
             result = true;
         } catch (SQLException e) {
-            throw new DAOException(e.getMessage());
+            throw new DAOException(ERROR_FIND_TOKEN);
         } finally {
             dataBaseConnection.closeConnection(connection);
         }
         return result;
     }
-
-    private void saveToken(String tokenRest) throws DAOException {
-        LocalDate date = LocalDate.now();
-        LocalTime time = LocalTime.now();
-        Connection connection = dataBaseConnection.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SAVE_TOKEN)) {
-            preparedStatement.setString(1, tokenRest);
-            preparedStatement.setDate(2, Date.valueOf(date));
-            preparedStatement.setTime(3, Time.valueOf(time));
-            preparedStatement.setBoolean(4, true);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new DAOException(ERROR_SQL_SAVE_TOKEN);
-        } finally {
-            dataBaseConnection.closeConnection(connection);
-        }
-    }
-
 
 }
