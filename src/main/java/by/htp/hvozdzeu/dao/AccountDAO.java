@@ -6,5 +6,6 @@ import by.htp.hvozdzeu.model.Account;
 public interface AccountDAO {
 
     String getToken(Account account) throws DAOException;
+    boolean findToken(String restToken) throws DAOException;
 
 }
