@@ -6,6 +6,9 @@ import by.htp.hvozdzeu.model.report.BalanceAccount;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Class for build entity from ResultSet query use Builder pattern
+ */
 public class BalanceAccountRowMapper {
 
     private static final String BALANCE_ACCOUNT_ID = "Id";

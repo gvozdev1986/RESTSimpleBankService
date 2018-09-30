@@ -5,6 +5,9 @@ import by.htp.hvozdzeu.model.Token;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Class for build entity from ResultSet query use Builder pattern
+ */
 public class TokenRestRowMapper {
 
     private static final String TOKEN_ID = "Id";

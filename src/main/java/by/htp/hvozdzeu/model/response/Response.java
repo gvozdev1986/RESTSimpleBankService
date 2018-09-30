@@ -5,6 +5,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
+/**
+ * The entity for send answer to client in format XML
+ * Use XML elements for fork Jersey library,
+ * sending and getting data.
+ */
 @XmlRootElement(name = "response")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Response {

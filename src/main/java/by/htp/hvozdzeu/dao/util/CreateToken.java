@@ -7,6 +7,9 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * The class for save new tokenRest to DB
+ */
 public class CreateToken implements InstanceDAO {
 
     private static final String SAVE_TOKEN = "INSERT INTO `bankservice`.`tokens` (`Token`, `Date`, `Time`, `Available`) VALUES (?, ?, ?, ?);";
@@ -15,6 +18,12 @@ public class CreateToken implements InstanceDAO {
     private CreateToken() {
     }
 
+    /**
+     * The method for save tokenRest to DB
+     *
+     * @param tokenRest String created tokenRest
+     * @throws DAOException Exception
+     */
     public static void saveToken(String tokenRest) throws DAOException {
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now();

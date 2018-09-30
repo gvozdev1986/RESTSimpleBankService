@@ -10,13 +10,28 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * The service for mapping request from client
+ */
 @Path("/auth")
 public class AuthServiceImpl {
 
     private AuthDAOImpl authDAO = DAOFactory.getAuthDAOImpl();
 
+    /**
+     * The method for mapping GET query for getting tokenRest
+     *
+     * @param creditCardNumber String card number
+     * @param cvCode           String code for verification credit card
+     * @param firstName        String first name owner credit card
+     * @param lastName         String last name owner credit card
+     * @param monthValid       String month valid credit card in format (xx)
+     * @param yearValid        String year valid credit card in format (xx)
+     * @return String token for next query (request)
+     * @throws DAOException Exception
+     */
     @GET
-    @Produces({ MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_XML})
     public String tokenAccess(@HeaderParam("creditCardNumber") String creditCardNumber,
                               @HeaderParam("cvCode") String cvCode,
                               @HeaderParam("firstName") String firstName,
