@@ -17,9 +17,11 @@ public class AuthDAOImpl extends AccountRowMapper implements InstanceDAO, Accoun
 
     private static final String CHECK_ACCOUNT = "SELECT * FROM `bankservice`.`account` WHERE `Login` = ? AND `Password` = ?;";
     private static final String SAVE_TOKEN = "INSERT INTO `bankservice`.`tokens` (`Token`, `Date`, `Time`, `Available`) VALUES (?, ?, ?, ?);";
+    private static final String FIND_TOKEN = "SELECT * FROM `tokens` WHERE `tokens`.`Token` = ?;";
 
     private static final String ERROR_SQL_CHECK_ACCOUNT = "Error check user.";
     private static final String ERROR_SQL_SAVE_TOKEN = "Error save token.";
+    private static final String ERROR_FIND_TOKEN = "Error find token.";
 
     @Override
     public String getToken(Account account) throws DAOException {
@@ -50,6 +52,22 @@ public class AuthDAOImpl extends AccountRowMapper implements InstanceDAO, Accoun
         }
 
         return token;
+    }
+
+    @Override
+    public boolean findToken(String restToken) throws DAOException {
+        boolean result;
+        Connection connection = dataBaseConnection.getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(FIND_TOKEN)) {
+            preparedStatement.setString(1, restToken);
+            preparedStatement.executeQuery();
+            result = true;
+        } catch (SQLException e) {
+            throw new DAOException(e.getMessage());
+        } finally {
+            dataBaseConnection.closeConnection(connection);
+        }
+        return result;
     }
 
     private void saveToken(String tokenRest) throws DAOException {
