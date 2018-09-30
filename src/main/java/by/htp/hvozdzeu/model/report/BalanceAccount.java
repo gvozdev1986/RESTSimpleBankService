@@ -8,6 +8,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+/**
+ * The entity for signature BalanceAccount
+ * extends Entity for getting ID. Use XML elements for fork Jersey library,
+ * sending and getting data.
+ */
 @XmlRootElement(name = "balance")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BalanceAccount extends Entity {

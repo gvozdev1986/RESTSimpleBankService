@@ -6,6 +6,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
+/**
+ * The entity for signature Token
+ * extends Entity for getting ID.
+ */
 public class Token extends Entity {
 
     private static final long serialVersionUID = 7207747575835066362L;

@@ -16,7 +16,6 @@ public class DAOFactory {
         balanceBankAccountDAOImpl = new BalanceBankAccountDAOImpl();
     }
 
-
     private DAOFactory() {
     }
 

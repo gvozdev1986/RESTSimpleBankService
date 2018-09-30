@@ -3,6 +3,9 @@ package by.htp.hvozdzeu.model.entity;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Entity with id field
+ */
 public class Entity implements Serializable {
 
 	private static final long serialVersionUID = 5268474521104203193L;
