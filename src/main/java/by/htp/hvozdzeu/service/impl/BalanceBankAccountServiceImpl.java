@@ -16,8 +16,6 @@ public class BalanceBankAccountServiceImpl {
 
     private BalanceBankAccountDAOImpl balanceBankAccountDAO = DAOFactory.getBalanceBankAccountDAOImpl();
 
-    // URI:
-    // /RESTfulCRUD/rest/balance/{parameters}
     @GET
     @Produces({MediaType.APPLICATION_XML})
     public BalanceAccount tokenAccess(@HeaderParam("tokenRest") String tokenRest,
@@ -25,8 +23,6 @@ public class BalanceBankAccountServiceImpl {
         return balanceBankAccountDAO.balanceBankAccount(tokenRest, cardNumber);
     }
 
-    // URI:
-    // /RESTServer/rest/balance/write/{parameters}
     @PUT
     @Path("/write/")
     @Produces({MediaType.APPLICATION_XML})
@@ -36,8 +32,6 @@ public class BalanceBankAccountServiceImpl {
         return balanceBankAccountDAO.writeOffBalanceBankAccount(tokenRest, cardNumber, new BigDecimal(amount));
     }
 
-    // URI:
-    // /RESTServer/rest/balance/refill/{parameters}
     @PUT
     @Path("/refill/")
     @Produces({MediaType.APPLICATION_XML})
@@ -47,5 +41,12 @@ public class BalanceBankAccountServiceImpl {
         return balanceBankAccountDAO.refillBalanceBankAccount(tokenRest, cardNumber, new BigDecimal(amount));
     }
 
+    @GET
+    @Path("/check/card/")
+    @Produces({MediaType.APPLICATION_XML})
+    public Response checkCardWriteOffBalance(@HeaderParam("tokenRest") String tokenRest,
+                                             @HeaderParam("cardNumber") String cardNumber) throws DAOException {
+        return balanceBankAccountDAO.checkCreditCardBankAccount(tokenRest, cardNumber);
+    }
 
 }

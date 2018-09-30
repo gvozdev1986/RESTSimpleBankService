@@ -7,6 +7,8 @@ import by.htp.hvozdzeu.dao.factory.DAOFactory;
 import by.htp.hvozdzeu.dao.mapper.BalanceAccountRowMapper;
 import by.htp.hvozdzeu.model.report.BalanceAccount;
 import by.htp.hvozdzeu.model.response.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -19,11 +21,14 @@ import static by.htp.hvozdzeu.dao.util.ResponseBuilder.buildResponse;
 
 public class BalanceBankAccountDAOImpl extends BalanceAccountRowMapper implements BalanceBankAccountDAO, InstanceDAO {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BalanceBankAccountDAOImpl.class);
+
     private static final String SQL_GET_BALANCE_BY_CARD_NUMBER = "SELECT * FROM `bankaccount` WHERE `bankaccount`.`CardNumber` = ?;";
     private static final String SQL_WRITE_OFF_BALANCE = "UPDATE `bankservice`.`bankaccount` SET `BalanceBankAccount`= ? WHERE  `CardNumber`= ?;";
     private static final String ERROR_SQL_GET_BALANCE_BY_CARD_NUMBER = "Error getting balance by card number.";
     private static final String ERROR_SQL_WRITE_OFF_BALANCE = "Error write-off balance from credit card.";
 
+    private static final BigDecimal MIN_CHECK_AMOUNT = new BigDecimal("1.00");
     private static final String MSG_STATUS_RESPONSE_CANCEL_TOKEN = "Token hasn't found or canceled.";
     private static final String MSG_STATUS_RESPONSE_SUCCESSFUL_TRANSACTION = "Operation was successful.";
     private static final String MSG_STATUS_RESPONSE_UNSUCCESSFUL_TRANSACTION = "Operation wasn't successful.";
@@ -93,23 +98,49 @@ public class BalanceBankAccountDAOImpl extends BalanceAccountRowMapper implement
         if (authDAO.findToken(tokenRest)) {
             BalanceAccount balanceAccount = balanceBankAccount(tokenRest, cardNumber);
             BigDecimal currentBalance = balanceAccount.getBalanceBankAccount();
-                BigDecimal newAmount = currentBalance.add(amount);
-                Connection connection = dataBaseConnection.getConnection();
-                try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_WRITE_OFF_BALANCE)) {
-                    connection.setAutoCommit(false);
-                    preparedStatement.setBigDecimal(1, newAmount);
-                    preparedStatement.setString(2, cardNumber);
-                    preparedStatement.executeUpdate();
-                    connection.commit();
-                    status = true;
-                    message = MSG_STATUS_RESPONSE_SUCCESSFUL_TRANSACTION;
-                } catch (SQLException e) {
-                    message = MSG_STATUS_RESPONSE_UNSUCCESSFUL_TRANSACTION;
-                    connection.rollback();
-                    throw new DAOException(ERROR_SQL_WRITE_OFF_BALANCE);
-                } finally {
-                    dataBaseConnection.closeConnection(connection);
-                }
+            BigDecimal newAmount = currentBalance.add(amount);
+            Connection connection = dataBaseConnection.getConnection();
+            try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_WRITE_OFF_BALANCE)) {
+                connection.setAutoCommit(false);
+                preparedStatement.setBigDecimal(1, newAmount);
+                preparedStatement.setString(2, cardNumber);
+                preparedStatement.executeUpdate();
+                connection.commit();
+                status = true;
+                message = MSG_STATUS_RESPONSE_SUCCESSFUL_TRANSACTION;
+            } catch (SQLException e) {
+                message = MSG_STATUS_RESPONSE_UNSUCCESSFUL_TRANSACTION;
+                connection.rollback();
+                throw new DAOException(ERROR_SQL_WRITE_OFF_BALANCE);
+            } finally {
+                dataBaseConnection.closeConnection(connection);
+            }
+        } else {
+            message = MSG_STATUS_RESPONSE_CANCEL_TOKEN;
+        }
+        //deleteToken(tokenRest);
+        return buildResponse(status, message);
+    }
+
+    @Override
+    public Response checkCreditCardBankAccount(String tokenRest, String cardNumber) throws DAOException {
+        boolean status = false;
+        String message = null;
+        if (authDAO.findToken(tokenRest)) {
+            try {
+
+                LOGGER.debug("Write-off amount {} from bank account for checking credit card", MIN_CHECK_AMOUNT);
+                writeOffBalanceBankAccount(tokenRest, cardNumber, MIN_CHECK_AMOUNT);
+
+                LOGGER.debug("Refill amount {} to bank account for checking credit card", MIN_CHECK_AMOUNT);
+                refillBalanceBankAccount(tokenRest, cardNumber, MIN_CHECK_AMOUNT);
+
+                status = true;
+                message = "Credit card has been successful checked.";
+            } catch (Exception e){
+                status = false;
+                message = "Credit card hasn't been checked.";
+            }
         } else {
             message = MSG_STATUS_RESPONSE_CANCEL_TOKEN;
         }

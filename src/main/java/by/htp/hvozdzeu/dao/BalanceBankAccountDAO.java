@@ -12,4 +12,6 @@ public interface BalanceBankAccountDAO {
     BalanceAccount balanceBankAccount(String tokenRest, String cardNumber) throws DAOException;
     Response writeOffBalanceBankAccount(String tokenRest, String cardNumber, BigDecimal amount) throws DAOException, SQLException;
     Response refillBalanceBankAccount(String tokenRest, String cardNumber, BigDecimal amount) throws DAOException, SQLException;
+    Response checkCreditCardBankAccount(String tokenRest, String cardNumber) throws DAOException;
+
 }
