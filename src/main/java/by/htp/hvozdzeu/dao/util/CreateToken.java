@@ -12,7 +12,7 @@ import java.time.LocalTime;
  */
 public class CreateToken implements InstanceDAO {
 
-    private static final String SAVE_TOKEN = "INSERT INTO `bankservice`.`tokens` (`Token`, `Date`, `Time`, `Available`) VALUES (?, ?, ?, ?);";
+    private static final String SAVE_TOKEN = "INSERT INTO `bankservice`.`tokens` (`Token`, `Date`, `Time`) VALUES (?, ?, ?);";
     private static final String ERROR_SQL_SAVE_TOKEN = "Error save token.";
 
     private CreateToken() {
@@ -32,7 +32,6 @@ public class CreateToken implements InstanceDAO {
             preparedStatement.setString(1, tokenRest);
             preparedStatement.setDate(2, Date.valueOf(date));
             preparedStatement.setTime(3, Time.valueOf(time));
-            preparedStatement.setBoolean(4, true);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new DAOException(ERROR_SQL_SAVE_TOKEN);

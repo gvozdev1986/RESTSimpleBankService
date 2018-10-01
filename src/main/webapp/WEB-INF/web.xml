@@ -4,7 +4,7 @@
 
 <web-app>
   <display-name>Simple Bank Service REST Application</display-name>
-  
+
   <servlet>
         <servlet-name>RESTServer</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -17,5 +17,5 @@
         <servlet-name>RESTServer</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
-  
+
 </web-app>

@@ -17,7 +17,6 @@ public class Token extends Entity {
     private String tokenRest;
     private LocalDate date;
     private LocalTime time;
-    private boolean available;
 
     private Token() {
     }
@@ -38,18 +37,13 @@ public class Token extends Entity {
         return time;
     }
 
-    public boolean isAvailable() {
-        return available;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Token token1 = (Token) o;
-        return available == token1.available &&
-                Objects.equals(tokenRest, token1.tokenRest) &&
+        return  Objects.equals(tokenRest, token1.tokenRest) &&
                 Objects.equals(date, token1.date) &&
                 Objects.equals(time, token1.time);
     }
@@ -60,8 +54,7 @@ public class Token extends Entity {
                 super.hashCode(),
                 tokenRest,
                 date,
-                time,
-                available
+                time
         );
     }
 
@@ -71,7 +64,6 @@ public class Token extends Entity {
                 "tokenRest='" + tokenRest + '\'' +
                 ", date=" + date +
                 ", time=" + time +
-                ", available=" + available +
                 '}';
     }
 
@@ -100,10 +92,6 @@ public class Token extends Entity {
             return this;
         }
 
-        public Builder available(boolean available) {
-            Token.this.available = available;
-            return this;
-        }
 
         public Token build() {
             return Token.this;

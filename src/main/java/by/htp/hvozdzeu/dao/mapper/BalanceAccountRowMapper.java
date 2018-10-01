@@ -2,9 +2,13 @@ package by.htp.hvozdzeu.dao.mapper;
 
 import by.htp.hvozdzeu.model.CreditCard;
 import by.htp.hvozdzeu.model.report.BalanceAccount;
+import by.htp.hvozdzeu.util.Decoder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static by.htp.hvozdzeu.util.Decoder.encrypt;
+import static by.htp.hvozdzeu.util.DecoderProperties.getSecretKey;
 
 /**
  * Class for build entity from ResultSet query use Builder pattern
@@ -21,9 +25,15 @@ public class BalanceAccountRowMapper {
     private static final String BALANCE_ACCOUNT_YEAR_VALID = "YearValid";
 
     protected BalanceAccount buildBalanceAccountRowMapper(ResultSet resultSet) throws SQLException {
+
+        /*
+        Get secret key for decrypt data from request
+         */
+        String secretKey = getSecretKey();
+
         return BalanceAccount.getBuilder()
                 .id(resultSet.getLong(BALANCE_ACCOUNT_ID))
-                .cardNumber(resultSet.getString(BALANCE_ACCOUNT_CARD_NUMBER))
+                .cardNumber(encrypt(resultSet.getString(BALANCE_ACCOUNT_CARD_NUMBER), secretKey))
                 .balanceBankAccount(resultSet.getBigDecimal(BALANCE_ACCOUNT_BALANCE))
                 .build();
     }

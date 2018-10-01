@@ -3,11 +3,9 @@ package by.htp.hvozdzeu.service.impl;
 import by.htp.hvozdzeu.dao.exception.DAOException;
 import by.htp.hvozdzeu.dao.factory.DAOFactory;
 import by.htp.hvozdzeu.dao.impl.AuthDAOImpl;
+import by.htp.hvozdzeu.model.response.Response;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -27,18 +25,21 @@ public class AuthServiceImpl {
      * @param lastName         String last name owner credit card
      * @param monthValid       String month valid credit card in format (xx)
      * @param yearValid        String year valid credit card in format (xx)
+     * @param appSecretCode    String special code for verify then request went from current client
      * @return String token for next query (request)
      * @throws DAOException Exception
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML})
-    public String tokenAccess(@HeaderParam("creditCardNumber") String creditCardNumber,
-                              @HeaderParam("cvCode") String cvCode,
-                              @HeaderParam("firstName") String firstName,
-                              @HeaderParam("lastName") String lastName,
-                              @HeaderParam("monthValid") String monthValid,
-                              @HeaderParam("yearValid") String yearValid) throws DAOException {
-        return authDAO.getToken(creditCardNumber, cvCode, firstName, lastName, monthValid, yearValid);
+    @Consumes("application/json")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response tokenAccess(@HeaderParam("creditCardNumber") String creditCardNumber,
+                                @HeaderParam("cvCode") String cvCode,
+                                @HeaderParam("firstName") String firstName,
+                                @HeaderParam("lastName") String lastName,
+                                @HeaderParam("monthValid") String monthValid,
+                                @HeaderParam("yearValid") String yearValid,
+                                @HeaderParam("appSecretCode") String appSecretCode) throws DAOException {
+        return authDAO.getToken(creditCardNumber, cvCode, firstName, lastName, monthValid, yearValid, appSecretCode);
     }
 
 }
