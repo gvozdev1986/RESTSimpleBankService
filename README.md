@@ -21,8 +21,7 @@ Table with examples of queries:
         <td>Type of query</td>
         <td>Example query</td>
         <td>Parameters</td>
-        <td>Success response</td>
-        <td>Unsuccess response</td>
+        <td>Success</td>
     </tr>
     <tr>
         <td>1</td>
@@ -31,16 +30,17 @@ Table with examples of queries:
         <td>/RESTServer/rest/auth/</td>
         <td>
             <ol>
+                <li>Content-Type</li>
                 <li>creditCardNumber</li>
                 <li>cvCode</li>
                 <li>firstName</li>             
                 <li>lastName</li>
                 <li>monthValid</li>
                 <li>yearValid</li>
+                <li>appSecretCode</li>
             </ol>
         </td>
-        <td>7d0d53cc-24f7-4d53-b482-c29afb939044</td>
-        <td>not found account</td>
+        <td>status and message in format JSON</td>
     </tr>        
     <tr>
         <td>2</td>
@@ -51,17 +51,10 @@ Table with examples of queries:
             <ol>
                 <li>tokenRest</li>
                 <li>cardNumber</li>
+                <li>appSecretCode</li>
             </ol>
         </td>
-        <td>
-        ```xml
-            <balance>
-                <cardNumber>1111 1111 1111 1111</cardNumber>
-                <balanceBankAccount>1179969.61</balanceBankAccount>
-            </balance>
-        ```
-        </td>
-        <td>Empty response</td>
+        <td>status and message in format JSON</td>
     </tr>
     <tr>
         <td>3</td>
@@ -70,28 +63,15 @@ Table with examples of queries:
         <td>/RESTServer/rest/balance/write/</td>
         <td>
             <ol>
+                <li>Content-Type</li>
                 <li>tokenRest</li>
                 <li>cardNumber</li>
                 <li>amount</li>
                 <li>cvCode</li>
+                <li>appSecretCode</li>
             </ol>
         </td>
-        <td>
-        ```xml
-            <response>
-                <status>true</status>
-                <message>Operation was successful.</message>
-            </response>
-        ```
-        </td>
-        <td>
-        ```xml
-            <response>
-                <status>false</status>
-                <message>Operation wasn't successful.</message>
-            </response>
-         ```
-        </td>
+        <td>status and message in format JSON</td>
     </tr>
     <tr>
         <td>4</td>
@@ -100,28 +80,15 @@ Table with examples of queries:
         <td>/RESTServer/rest/balance/refill/</td>
         <td>
             <ol>
+                <li>Content-Type</li>
                 <li>tokenRest</li>
                 <li>cardNumber</li>
                 <li>amount</li>
                 <li>cvCode</li>
+                <li>appSecretCode</li>
             </ol>
         </td>
-        <td>
-        ```xml
-            <response>
-                <status>true</status>
-                <message>Operation was successful.</message>
-            </response>
-        ```
-        </td>
-        <td>
-        ```xml
-            <response>
-                <status>false</status>
-                <message>Operation wasn't successful.</message>
-            </response>
-        ```
-        </td>
+        <td>status and message in format JSON</td>
     </tr>
     <tr>
         <td>5</td>
@@ -130,32 +97,20 @@ Table with examples of queries:
         <td>/RESTServer/rest/balance/check/card/</td>
         <td>
             <ol>
+                <li>Content-Type</li>
                 <li>tokenRest</li>
                 <li>cardNumber</li>
                 <li>cvCode</li>
+                <li>appSecretCode</li>
             </ol>
         </td>
-        <td>
-        ```xml
-            <response>
-                <status>true</status>
-                <message>Credit card has been successful checked.</message>
-            </response>
-        ```
-        </td>
-        <td>
-        ```xml
-            <response>
-                <status>false</status>
-                <message>Credit card hasn't been checked.</message>
-            </response>
-        ```
-        </td>
+        <td>status and message in format JSON</td>
     </tr>
 </table>
 
 Description:
 <ol>
+    <li><b>Content-Type</b> - application/json (for ger response in format JSON</li>
     <li><b>creditCardNumber</b> - Credit card number in format XXXX XXXX XXXX XXXX</li>
     <li><b>cvCode</b> - Secret code from credit card for verification</li>
     <li><b>firstName</b> - First name owner credit card (from card)</li>             
@@ -163,4 +118,76 @@ Description:
     <li><b>monthValid</b> - Month valid credit card in format XX</li>
     <li><b>yearValid</b> - Year valid credit card in format XX</li>
     <li><b>amount</b> - Amount of payment (write-off, refill, back) balance</li>
+    <li><b>appSecretCode</b> - Special code for verify then request went from current client</li>
 </ol>
+
+
+Since the custom version of the response format was created, a separate Response class was created.
+```java
+public class Response {
+
+    private boolean status;
+    private String message;
+
+    private Response() {
+    }
+
+    public static Builder getBuilder() {
+        return new Response().new Builder();
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Response response = (Response) o;
+        return status == response.status &&
+                Objects.equals(message, response.message);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(status, message);
+    }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "status=" + status +
+                ", message='" + message + '\'' +
+                '}';
+    }
+
+    public class Builder {
+
+        private Builder() {
+        }
+
+        public Builder status(boolean status) {
+            Response.this.status = status;
+            return this;
+        }
+
+        public Builder message(String message) {
+            Response.this.message = message;
+            return this;
+        }
+
+        public Response build() {
+            return Response.this;
+        }
+
+    }
+
+}
+
+```

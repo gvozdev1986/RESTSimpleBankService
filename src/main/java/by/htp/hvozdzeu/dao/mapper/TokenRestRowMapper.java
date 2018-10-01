@@ -14,7 +14,6 @@ public class TokenRestRowMapper {
     private static final String TOKEN = "Token";
     private static final String TOKEN_DATE = "Date";
     private static final String TOKEN_TIME = "Time";
-    private static final String TOKEN_AVAILABLE = "Available";
 
     protected Token buildTokenRowMapper(ResultSet resultSet) throws SQLException {
         return Token.getBuilder()
@@ -22,7 +21,6 @@ public class TokenRestRowMapper {
                 .tokenRest(resultSet.getString(TOKEN))
                 .date(resultSet.getDate(TOKEN_DATE).toLocalDate())
                 .time(resultSet.getTime(TOKEN_TIME).toLocalTime())
-                .available(resultSet.getBoolean(TOKEN_AVAILABLE))
                 .build();
     }
 
