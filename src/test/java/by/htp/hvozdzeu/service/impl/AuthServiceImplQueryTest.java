@@ -72,6 +72,9 @@ public class AuthServiceImplQueryTest {
             assertNotNull(status);
             assertNotNull(message);
 
+            System.out.println(status);
+            System.out.println(message);
+
         }
         conn.disconnect();
     }
