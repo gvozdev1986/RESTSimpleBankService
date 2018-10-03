@@ -1,5 +1,8 @@
 package by.htp.hvozdzeu.util;
 
+/**
+ * The class for equals with null
+ */
 public class CustomEqualsWithNull {
 
     private CustomEqualsWithNull() {

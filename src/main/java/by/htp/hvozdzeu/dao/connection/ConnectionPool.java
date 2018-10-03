@@ -11,6 +11,9 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import static by.htp.hvozdzeu.util.Decoder.decrypt;
+import static by.htp.hvozdzeu.util.DecoderProperties.getSecretKey;
+
 /**
  * The class <code>ConnectionPool</code>
  * provides connections to the database.
@@ -67,7 +70,10 @@ public class ConnectionPool {
         }
         for (int i = 0; i < minCountConnect; i++) {
             try {
-                pool.add(DriverManager.getConnection(url, login, pswd));
+                pool.add(DriverManager.getConnection(
+                        url,
+                        decrypt(login, getSecretKey()),
+                        decrypt(pswd, getSecretKey())));
             } catch (SQLException e) {
                 LOGGER.error(e.getMessage(), e);
             }

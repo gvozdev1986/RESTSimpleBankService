@@ -1,6 +1,6 @@
 package by.htp.hvozdzeu.util;
 
-import by.htp.hvozdzeu.dao.impl.BalanceBankAccountDAOImpl;
+import by.htp.hvozdzeu.dao.impl.BalanceBankAccountAccountRestInterfaceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import java.util.Base64;
  */
 public final class Decoder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BalanceBankAccountDAOImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BalanceBankAccountAccountRestInterfaceImpl.class);
     private static SecretKeySpec secretKey;
 
     /**
