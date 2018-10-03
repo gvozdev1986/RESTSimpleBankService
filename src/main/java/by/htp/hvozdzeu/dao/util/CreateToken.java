@@ -1,6 +1,6 @@
 package by.htp.hvozdzeu.dao.util;
 
-import by.htp.hvozdzeu.dao.InstanceDAO;
+import by.htp.hvozdzeu.dao.connection.ConnectionPool;
 import by.htp.hvozdzeu.dao.exception.DAOException;
 
 import java.sql.*;
@@ -10,10 +10,16 @@ import java.time.LocalTime;
 /**
  * The class for save new tokenRest to DB
  */
-public class CreateToken implements InstanceDAO {
+public class CreateToken {
 
     private static final String SAVE_TOKEN = "INSERT INTO `bankservice`.`tokens` (`Token`, `Date`, `Time`) VALUES (?, ?, ?);";
     private static final String ERROR_SQL_SAVE_TOKEN = "Error save token.";
+
+    /**
+     * Instance ConnectionPool for connect with DB in DAO implements
+     */
+    private static ConnectionPool dataBaseConnection = ConnectionPool.getInstance();
+
 
     private CreateToken() {
     }
