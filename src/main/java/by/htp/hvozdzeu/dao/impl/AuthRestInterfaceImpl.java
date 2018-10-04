@@ -33,7 +33,7 @@ public class AuthRestInterfaceImpl implements AccountRestInterface {
             "AND `LastName` = ? " +
             "AND `MonthValid` = ? " +
             "AND `YearValid` = ?;";
-    private static final String FIND_TOKEN = "SELECT * FROM `tokens` WHERE `tokens`.`Token` = ?;";
+    private static final String FIND_TOKEN = "SELECT tokens.Token, tokens.Date, tokens.Time FROM tokens WHERE tokens.Token = ?;";
     private static final String ERROR_SQL_CHECK_CREDIT_CARD = "Error check credit card.";
     private static final String ERROR_FIND_TOKEN = "Error find token.";
     private static final String NOT_CREATE_TOKEN = "Not found account";
@@ -126,7 +126,8 @@ public class AuthRestInterfaceImpl implements AccountRestInterface {
             preparedStatement.setString(1, restToken);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    if (resultSet.getRow() == 1) { //NOSONAR
+                    String token = resultSet.getString("Token");
+                    if (!token.isEmpty()) { //NOSONAR
                         result = true;
                     }
                 }
