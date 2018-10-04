@@ -12,16 +12,16 @@ import java.util.Objects;
  */
 @XmlRootElement(name = "response")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Response {
+public class ResponseEntity {
 
     private boolean status;
     private String message;
 
-    private Response() {
+    private ResponseEntity() {
     }
 
     public static Builder getBuilder() {
-        return new Response().new Builder();
+        return new ResponseEntity().new Builder();
     }
 
     public boolean isStatus() {
@@ -36,9 +36,9 @@ public class Response {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Response response = (Response) o;
-        return status == response.status &&
-                Objects.equals(message, response.message);
+        ResponseEntity responseEntity = (ResponseEntity) o;
+        return status == responseEntity.status &&
+                Objects.equals(message, responseEntity.message);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Response {
 
     @Override
     public String toString() {
-        return "Response{" +
+        return "ResponseEntity{" +
                 "status=" + status +
                 ", message='" + message + '\'' +
                 '}';
@@ -61,17 +61,17 @@ public class Response {
         }
 
         public Builder status(boolean status) {
-            Response.this.status = status;
+            ResponseEntity.this.status = status;
             return this;
         }
 
         public Builder message(String message) {
-            Response.this.message = message;
+            ResponseEntity.this.message = message;
             return this;
         }
 
-        public Response build() {
-            return Response.this;
+        public ResponseEntity build() {
+            return ResponseEntity.this;
         }
 
     }

@@ -1,9 +1,9 @@
 package by.htp.hvozdzeu.dao.util;
 
-import by.htp.hvozdzeu.model.response.Response;
+import by.htp.hvozdzeu.model.response.ResponseEntity;
 
 /**
- * The class for build custom Response in JSON format
+ * The class for build custom ResponseEntity in JSON format
  */
 public class ResponseBuilder {
 
@@ -14,13 +14,13 @@ public class ResponseBuilder {
     }
 
     /**
-     * The method for build custom Response in JSON format
+     * The method for build custom ResponseEntity in JSON format
      * @param status Boolean status (true/false)
      * @param message String message
-     * @return Response entity
+     * @return ResponseEntity entity
      */
-    public static Response buildResponse(boolean status, String message){
-        return Response.getBuilder()
+    public static ResponseEntity buildResponse(boolean status, String message){
+        return ResponseEntity.getBuilder()
                 .status(status)
                 .message(message)
                 .build();

@@ -3,12 +3,11 @@ package by.htp.hvozdzeu.dao.impl;
 import by.htp.hvozdzeu.dao.BalanceBankAccountRestInterface;
 import by.htp.hvozdzeu.dao.connection.ConnectionPool;
 import by.htp.hvozdzeu.dao.exception.DAOException;
-import by.htp.hvozdzeu.dao.factory.DAOFactory;
 import by.htp.hvozdzeu.model.report.BalanceAccount;
-import by.htp.hvozdzeu.model.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,36 +42,28 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
      * Instance ConnectionPool for connect with DB in DAO implements
      */
     private ConnectionPool dataBaseConnection = ConnectionPool.getInstance();
-    private AuthRestInterfaceImpl authDAO = DAOFactory.getAuthDAOImpl();
-
 
     /**
      * The method for write-off money from bank account
      *
-     * @param tokenRest     String current tokenRest
      * @param cardNumber    String credit card number
      * @param amount        BigDecimal amount for write-off
      * @param cvCode        String code for verification credit card
      * @param appSecretCode String special code for verify then request went from current client
-     * @return Response build answer in XML format
+     * @return ResponseEntity build answer in XML format
      * @throws DAOException Exception
      * @throws SQLException Exception
      */
     @Override
-    public Response writeOffBalanceBankAccount(String tokenRest,
-                                               String cardNumber,
+    public Response writeOffBalanceBankAccount(String cardNumber,
                                                BigDecimal amount,
                                                String cvCode,
                                                String appSecretCode) throws DAOException, SQLException {
         boolean status = false;
         String message;
 
-        if(!authDAO.findToken(tokenRest)){
-            return buildResponse(false, MSG_STATUS_RESPONSE_CANCEL_TOKEN);
-        }
-
         if (checkCVCode(cardNumber, cvCode) && appSecretCode.equals(APP_SECRET_CODE)) {
-            BalanceAccount balanceAccount = balanceBankAccount(tokenRest, cardNumber, appSecretCode);
+            BalanceAccount balanceAccount = balanceBankAccount(cardNumber, appSecretCode);
             BigDecimal currentBalance = balanceAccount.getBalanceBankAccount();
             if (currentBalance.intValue() > amount.intValue()) {
                 BigDecimal newAmount = currentBalance.subtract(amount);
@@ -97,42 +88,38 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
             } else {
                 message = MSG_STATUS_RESPONSE_NOT_ENOUGH_MONEY;
                 LOGGER.debug("Transaction has been canceled duo to not enough money.");
+                return Response.status(200).entity(buildResponse(status, message)).build();
             }
 
         } else {
             message = MSG_STATUS_RESPONSE_CANCEL_TOKEN;
             LOGGER.debug("Transaction has been canceled duo to not auth.");
+            return Response.status(200).entity(buildResponse(status, message)).build();
         }
-        return buildResponse(status, message);
+        return Response.status(200).entity(buildResponse(status, message)).build();
     }
 
     /**
      * The method for refill (back) money to bank account
      *
-     * @param tokenRest     String current tokenRest
      * @param cardNumber    String credit card number
      * @param amount        BigDecimal amount for write-off
      * @param cvCode        String code for verification credit card
      * @param appSecretCode String special code for verify then request went from current client
-     * @return Response build answer in XML format
+     * @return ResponseEntity build answer in XML format
      * @throws DAOException Exception
      * @throws SQLException Exception
      */
     @Override
-    public Response refillBalanceBankAccount(String tokenRest,
-                                             String cardNumber,
+    public Response refillBalanceBankAccount(String cardNumber,
                                              BigDecimal amount,
                                              String cvCode,
                                              String appSecretCode) throws DAOException, SQLException {
         boolean status = false;
         String message;
 
-        if(!authDAO.findToken(tokenRest)){
-            return buildResponse(false, MSG_STATUS_RESPONSE_CANCEL_TOKEN);
-        }
-
         if (appSecretCode.equals(APP_SECRET_CODE)) {
-            BalanceAccount balanceAccount = balanceBankAccount(tokenRest, cardNumber, appSecretCode);
+            BalanceAccount balanceAccount = balanceBankAccount(cardNumber, appSecretCode);
             BigDecimal currentBalance = balanceAccount.getBalanceBankAccount();
             BigDecimal newAmount = currentBalance.add(amount);
             Connection connection = dataBaseConnection.getConnection();
@@ -153,15 +140,15 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
             }
         } else {
             message = MSG_STATUS_RESPONSE_CANCEL_TOKEN;
+            return Response.status(200).entity(buildResponse(status, message)).build();
         }
-        return buildResponse(status, message);
+        return Response.status(200).entity(buildResponse(status, message)).build();
     }
 
 
     /**
      * The method for transfer money from between credit cards (bank accounts)
      *
-     * @param tokenRest      String current tokenRest
      * @param cardNumberFrom String credit card number which will be write-off money
      * @param cardNumberTo   String credit card number which will be refill (back) money
      * @param amount         BigDecimal amount for write-off or refill (back)
@@ -169,8 +156,7 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
      * @return build answer in JSON format about result transaction
      */
     @Override
-    public Response transferBalanceCardBankAccount(String tokenRest,
-                                                   String cardNumberFrom,
+    public Response transferBalanceCardBankAccount(String cardNumberFrom,
                                                    String cardNumberTo,
                                                    BigDecimal amount,
                                                    String cvCode,
@@ -179,12 +165,8 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
         boolean status = false;
         String message;
 
-        if(!authDAO.findToken(tokenRest)){
-            return buildResponse(false, MSG_STATUS_RESPONSE_CANCEL_TOKEN);
-        }
-
         if (checkCVCode(cardNumberFrom, cvCode) && appSecretCode.equals(APP_SECRET_CODE)) {
-            BalanceAccount balanceAccount = balanceBankAccount(tokenRest, cardNumberFrom, appSecretCode);
+            BalanceAccount balanceAccount = balanceBankAccount(cardNumberFrom, appSecretCode);
             BigDecimal currentBalance = balanceAccount.getBalanceBankAccount();
             if (currentBalance.intValue() > amount.intValue()) {
                 Connection connection = dataBaseConnection.getConnection();
@@ -207,43 +189,39 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
             } else {
                 message = MSG_STATUS_RESPONSE_NOT_ENOUGH_MONEY;
                 LOGGER.debug("Transaction has been canceled duo to not enough money.");
+                return Response.status(200).entity(buildResponse(status, message)).build();
             }
         } else {
             message = MSG_STATUS_RESPONSE_CANCEL_TOKEN;
             LOGGER.debug("Transaction has been canceled duo to not auth.");
+            return Response.status(200).entity(buildResponse(status, message)).build();
         }
-        return buildResponse(status, message);
+        return Response.status(200).entity(buildResponse(status, message)).build();
     }
 
     /**
      * The method to check credit card validity
      *
-     * @param tokenRest     String current tokenRest
      * @param cardNumber    String credit card number
      * @param cvCode        String code for verification credit card
      * @param appSecretCode String special code for verify then request went from current client
-     * @return Response build answer in XML format
+     * @return ResponseEntity build answer in XML format
      * @throws DAOException Exception
      */
     @Override
-    public Response checkNewCreditCard(String tokenRest,
-                                       String cardNumber,
+    public Response checkNewCreditCard(String cardNumber,
                                        String cvCode,
                                        String appSecretCode) throws DAOException {
         boolean status = false;
         String message;
         LOGGER.info("Start checking credit card.");
 
-        if(!authDAO.findToken(tokenRest)){
-            return buildResponse(false, MSG_STATUS_RESPONSE_CANCEL_TOKEN);
-        }
-
         if (checkCVCode(cardNumber, cvCode) && appSecretCode.equals(APP_SECRET_CODE)) {
             try {
                 LOGGER.debug("Write-off amount {} from bank account for checking credit card", MIN_CHECK_AMOUNT);
-                writeOffBalanceBankAccount(tokenRest, cardNumber, BigDecimal.valueOf(1.00), cvCode, appSecretCode);
+                writeOffBalanceBankAccount(cardNumber, BigDecimal.valueOf(1.00), cvCode, appSecretCode);
                 LOGGER.debug("Refill amount {} to bank account for checking credit card", MIN_CHECK_AMOUNT);
-                refillBalanceBankAccount(tokenRest, cardNumber, BigDecimal.valueOf(1.00), cvCode, appSecretCode);
+                refillBalanceBankAccount(cardNumber, BigDecimal.valueOf(1.00), cvCode, appSecretCode);
                 status = true;
                 message = "Credit card has been successful checked.";
                 LOGGER.info("Checked was successful.");
@@ -253,9 +231,10 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
             }
         } else {
             message = MSG_STATUS_RESPONSE_CANCEL_TOKEN;
+            return Response.status(200).entity(buildResponse(status, message)).build();
         }
         LOGGER.info("Send response.");
-        return buildResponse(status, message);
+        return Response.status(200).entity(buildResponse(status, message)).build();
     }
 
 
@@ -291,14 +270,13 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
     /**
      * The method for getting balance bank account
      *
-     * @param tokenRest     String current tokenRest
      * @param cardNumber    String credit card number
      * @param appSecretCode String special code for verify then request went from current client
      * @return BalanceAccount
      * @throws DAOException Exception
      */
     @Override
-    public BalanceAccount balanceBankAccount(String tokenRest, String cardNumber, String appSecretCode) throws DAOException {
+    public BalanceAccount balanceBankAccount(String cardNumber, String appSecretCode) throws DAOException {
         BalanceAccount balanceAccount = null;
         if (appSecretCode.equals(APP_SECRET_CODE)) {
             Connection connection = dataBaseConnection.getConnection();
@@ -321,6 +299,5 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
         }
         return balanceAccount;
     }
-
 
 }
