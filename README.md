@@ -96,7 +96,7 @@ Table with examples of queries:
 
 Description:
 <ol>
-    <li><b>Content-Type</b> - application/json (for ger response in format JSON</li>
+    <li><b>Content-Type</b> - application/json (for ger responseEntity in format JSON</li>
     <li><b>creditCardNumber</b> - Credit card number in format XXXX XXXX XXXX XXXX</li>
     <li><b>cvCode</b> - Secret code from credit card for verification</li>
     <li><b>firstName</b> - First name owner credit card (from card)</li>             

@@ -10,7 +10,7 @@ package by.htp.hvozdzeu.service.exception;
  */
 public class ServiceException extends Exception {
 
-	private static final long serialVersionUID = -8444530820199529289L;
+	private static final long serialVersionUID = -8444530990199529289L;
 
 	public ServiceException() {
         super();
