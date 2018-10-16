@@ -180,7 +180,9 @@ public class BalanceBankAccountAccountRestInterfaceImpl implements BalanceBankAc
                     connection.commit();
                     status = true;
                     message = MSG_STATUS_RESPONSE_SUCCESSFUL_TRANSACTION;
+                    LOGGER.debug("Amount {} was wrote-off", amount);
                 } catch (SQLException e) {
+                    LOGGER.debug("Amount {} wasn't wrote-off duo to create rollback.", amount);
                     connection.rollback();
                     throw new DAOException(e.getMessage());
                 } finally {
